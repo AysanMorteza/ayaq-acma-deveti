@@ -6,7 +6,8 @@ import {
   query, 
   orderBy, 
   deleteDoc, 
-  doc 
+  doc,
+  getDocs 
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { RsvpSubmission } from "../types";
@@ -47,23 +48,65 @@ export const AdminGuestModal: React.FC<AdminModalProps> = ({ isOpen, onClose }) 
   useEffect(() => {
     if (!isOpen) return;
 
-    // Listen to firestore updates in real-time
-    const q = query(collection(db, "rsvps"), orderBy("createdAt", "desc"));
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        const data: RsvpSubmission[] = snapshot.docs.map((docSnap) => ({
+    let isMounted = true;
+    const parseDocs = (docs: any[]): RsvpSubmission[] => {
+      return docs
+        .map((docSnap) => ({
           id: docSnap.id,
           ...(docSnap.data() as Omit<RsvpSubmission, "id">),
-        }));
-        setSubmissions(data);
-      },
-      (error) => {
-        console.error("Error loading submissions:", error);
-      }
-    );
+        }))
+        .sort((a, b) => {
+          const timeA = typeof a.createdAt === "number" ? a.createdAt : 0;
+          const timeB = typeof b.createdAt === "number" ? b.createdAt : 0;
+          return timeB - timeA;
+        });
+    };
 
-    return () => unsubscribe();
+    // Immediate fetch
+    getDocs(collection(db, "rsvps"))
+      .then((snapshot) => {
+        if (!isMounted) return;
+        setSubmissions(parseDocs(snapshot.docs));
+      })
+      .catch((err) => console.warn("Admin getDocs warning:", err));
+
+    // Listen in real-time
+    let unsubscribe: () => void = () => {};
+    try {
+      const q = query(collection(db, "rsvps"), orderBy("createdAt", "desc"));
+      unsubscribe = onSnapshot(
+        q,
+        (snapshot) => {
+          if (!isMounted) return;
+          setSubmissions(parseDocs(snapshot.docs));
+        },
+        (error) => {
+          console.warn("Admin onSnapshot error, falling back:", error);
+          try {
+            unsubscribe = onSnapshot(collection(db, "rsvps"), (snap) => {
+              if (!isMounted) return;
+              setSubmissions(parseDocs(snap.docs));
+            });
+          } catch (e) {
+            console.error("Admin listener failure:", e);
+          }
+        }
+      );
+    } catch (err) {
+      try {
+        unsubscribe = onSnapshot(collection(db, "rsvps"), (snap) => {
+          if (!isMounted) return;
+          setSubmissions(parseDocs(snap.docs));
+        });
+      } catch (e) {
+        console.error("Admin listener catch failure:", e);
+      }
+    }
+
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
   }, [isOpen]);
 
   const handleLogin = (e: React.FormEvent) => {

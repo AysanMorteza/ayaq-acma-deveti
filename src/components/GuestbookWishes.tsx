@@ -9,7 +9,8 @@ import {
   deleteDoc, 
   updateDoc, 
   doc, 
-  increment 
+  increment,
+  getDocs
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { RsvpSubmission } from "../types";
@@ -77,29 +78,94 @@ export const GuestbookWishes: React.FC = () => {
   // Target Passcode requested by user
   const TARGET_PASSCODE = "Araz_King1383";
 
-  // Listen to Firestore real-time updates
+  // Listen to Firestore real-time updates with robust fallback
   useEffect(() => {
-    const q = query(collection(db, "rsvps"), orderBy("createdAt", "desc"));
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        const list: RsvpSubmission[] = snapshot.docs
-          .map((docSnap) => ({
-            id: docSnap.id,
-            ...(docSnap.data() as Omit<RsvpSubmission, "id">),
-          }))
-          .filter((item) => item.message && item.message.trim().length > 0);
+    let isMounted = true;
 
-        setMessages(list);
+    const parseDocs = (docs: any[]): RsvpSubmission[] => {
+      return docs
+        .map((docSnap) => ({
+          id: docSnap.id,
+          ...(docSnap.data() as Omit<RsvpSubmission, "id">),
+        }))
+        .filter((item) => item.message && item.message.trim().length > 0)
+        .sort((a, b) => {
+          const timeA = typeof a.createdAt === "number" ? a.createdAt : 0;
+          const timeB = typeof b.createdAt === "number" ? b.createdAt : 0;
+          return timeB - timeA;
+        });
+    };
+
+    // 1. Immediate fetch for fast display
+    getDocs(collection(db, "rsvps"))
+      .then((snapshot) => {
+        if (!isMounted) return;
+        const list = parseDocs(snapshot.docs);
+        if (list.length > 0) {
+          setMessages(list);
+        }
         setLoading(false);
-      },
-      (error) => {
-        console.error("Error loading wishes:", error);
-        setLoading(false);
+      })
+      .catch((err) => {
+        console.warn("Initial wishes getDocs warning:", err);
+      });
+
+    // 2. Real-time subscription with automatic fallback
+    let unsubscribe: () => void = () => {};
+
+    try {
+      // Try subscription with orderBy
+      const q = query(collection(db, "rsvps"), orderBy("createdAt", "desc"));
+      unsubscribe = onSnapshot(
+        q,
+        (snapshot) => {
+          if (!isMounted) return;
+          const list = parseDocs(snapshot.docs);
+          setMessages(list);
+          setLoading(false);
+        },
+        (error) => {
+          console.warn("onSnapshot with orderBy error, switching to direct collection listener:", error);
+          // Fallback to simple collection listener without server-side ordering
+          try {
+            unsubscribe = onSnapshot(
+              collection(db, "rsvps"),
+              (snap) => {
+                if (!isMounted) return;
+                const list = parseDocs(snap.docs);
+                setMessages(list);
+                setLoading(false);
+              },
+              (err2) => {
+                console.error("Direct collection listener error:", err2);
+                if (isMounted) setLoading(false);
+              }
+            );
+          } catch (e) {
+            console.error("Fallback listener failure:", e);
+            if (isMounted) setLoading(false);
+          }
+        }
+      );
+    } catch (err) {
+      console.warn("Initial onSnapshot error, falling back:", err);
+      try {
+        unsubscribe = onSnapshot(collection(db, "rsvps"), (snapshot) => {
+          if (!isMounted) return;
+          const list = parseDocs(snapshot.docs);
+          setMessages(list);
+          setLoading(false);
+        });
+      } catch (e) {
+        console.error("Critical Firestore listener error:", e);
+        if (isMounted) setLoading(false);
       }
-    );
+    }
 
-    return () => unsubscribe();
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
   }, []);
 
   // Save guest liked IDs to localStorage
