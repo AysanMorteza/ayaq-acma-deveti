@@ -1,8 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Clock, Heart, Sparkles, Crown } from 'lucide-react';
+import { 
+  Calendar, 
+  Clock, 
+  Heart, 
+  Sparkles, 
+  Crown, 
+  ChevronDown, 
+  MapPin, 
+  Compass, 
+  MessageSquareHeart 
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { INVITATION_DETAILS } from '../data/invitationData';
 
 export const HeroSection: React.FC = () => {
+  const [showFloatingCue, setShowFloatingCue] = useState<boolean>(true);
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -10,6 +22,19 @@ export const HeroSection: React.FC = () => {
     seconds: 0,
     isExpired: false
   });
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 70) {
+        setShowFloatingCue(false);
+      } else {
+        setShowFloatingCue(true);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     const targetDate = new Date(INVITATION_DETAILS.targetDateISO).getTime();
@@ -35,6 +60,15 @@ export const HeroSection: React.FC = () => {
     const interval = setInterval(calculateCountdown, 1000);
     return () => clearInterval(interval);
   }, []);
+
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      const yOffset = -25;
+      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+  };
 
   const toPersianNum = (num: number) => {
     return num.toString().replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[+d]);
@@ -167,8 +201,82 @@ export const HeroSection: React.FC = () => {
               خوش آمدید! در کمال سرور و شادمانی در کنار هم هستیم.
             </div>
           )}
+
+          {/* 🌟 Quick Jump Shortcut Chips */}
+          <div className="mt-7 flex flex-wrap items-center justify-center gap-2">
+            <button
+              type="button"
+              onClick={() => scrollToSection('story-section')}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#FFFDF8] border border-[#D4AF37]/60 text-xs font-bold text-[#8A6412] hover:bg-[#FAF4E4] hover:border-[#D4AF37] transition shadow-sm cursor-pointer select-none active:scale-95"
+            >
+              <Compass className="w-3.5 h-3.5 text-[#B8860B]" />
+              <span>داستان ما</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => scrollToSection('venue-section')}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#FFFDF8] border border-[#D4AF37]/60 text-xs font-bold text-[#8A6412] hover:bg-[#FAF4E4] hover:border-[#D4AF37] transition shadow-sm cursor-pointer select-none active:scale-95"
+            >
+              <MapPin className="w-3.5 h-3.5 text-[#B8860B]" />
+              <span>آدرس و مسیریابی تالار</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => scrollToSection('wishes-guestbook')}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#FFFDF8] border border-[#D4AF37]/60 text-xs font-bold text-[#8A6412] hover:bg-[#FAF4E4] hover:border-[#D4AF37] transition shadow-sm cursor-pointer select-none active:scale-95"
+            >
+              <MessageSquareHeart className="w-3.5 h-3.5 text-[#B8860B]" />
+              <span>دفترچه تبریک</span>
+            </button>
+          </div>
+
+          {/* ✨ Pulsing & Bouncing Golden Scroll Guide Pill */}
+          <div className="mt-6 flex justify-center">
+            <button
+              type="button"
+              onClick={() => scrollToSection('story-section')}
+              className="group flex flex-col items-center gap-1 px-5 py-3 rounded-2xl bg-gradient-to-b from-[#FFFFFF] via-[#FDFAF3] to-[#F5EAD4] border border-[#D4AF37]/70 shadow-[0_6px_20px_rgba(212,175,55,0.2)] hover:shadow-[0_8px_25px_rgba(212,175,55,0.35)] transition-all cursor-pointer select-none active:scale-95"
+            >
+              <div className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#8A6412]">
+                <Sparkles className="w-3.5 h-3.5 text-[#B8860B] animate-pulse" />
+                <span>برای مشاهده ادامه دعوت‌نامه و جزئیات به پایین بکشید</span>
+                <Sparkles className="w-3.5 h-3.5 text-[#B8860B] animate-pulse" />
+              </div>
+              <span className="text-[11px] text-[#9E7728] font-medium">
+                (داستان ما، لوکیشن تالار شالیز، منو و تبریک مهمانان)
+              </span>
+              <div className="mt-1 animate-bounce text-[#B8860B] flex items-center justify-center w-6 h-6 rounded-full bg-[#FAF0D6] border border-[#D4AF37]/50 shadow-inner">
+                <ChevronDown className="w-4 h-4" />
+              </div>
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* 🚀 Floating Bottom Micro-Cue (Fades out softly after scrolling) */}
+      <AnimatePresence>
+        {showFloatingCue && (
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 15 }}
+            transition={{ duration: 0.25 }}
+            className="fixed bottom-16 sm:bottom-20 inset-x-0 z-30 flex justify-center pointer-events-none px-4"
+          >
+            <button
+              type="button"
+              onClick={() => scrollToSection('story-section')}
+              className="pointer-events-auto flex items-center gap-2 px-4 py-2 rounded-full bg-[#181410]/95 border border-[#D4AF37] text-amber-300 text-xs font-bold shadow-[0_8px_25px_rgba(0,0,0,0.65)] backdrop-blur-md cursor-pointer hover:scale-105 active:scale-95 transition-all animate-bounce"
+            >
+              <ChevronDown className="w-3.5 h-3.5 text-amber-400" />
+              <span>ادامه دعوت‌نامه و جزئیات مراسم ↓</span>
+              <ChevronDown className="w-3.5 h-3.5 text-amber-400" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };

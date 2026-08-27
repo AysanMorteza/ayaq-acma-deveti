@@ -19,7 +19,7 @@ interface NavItem {
 export const BottomNavigationMenu: React.FC = () => {
   const [activeSection, setActiveSection] = useState<string>("hero-section");
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
-  const [isVisible, setIsVisible] = useState<boolean>(false);
+  const [isVisible, setIsVisible] = useState<boolean>(true);
   const menuRef = useRef<HTMLDivElement>(null);
   const navContainerRef = useRef<HTMLDivElement>(null);
 
@@ -50,18 +50,22 @@ export const BottomNavigationMenu: React.FC = () => {
     },
   ];
 
-  // Show bottom menu after scrolling down a bit & detect current active section
+  // Always keep bottom menu visible & detect current active section
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
       const windowHeight = window.innerHeight;
       const docHeight = document.documentElement.scrollHeight;
 
-      if (scrollY > 120) {
-        setIsVisible(true);
-      } else {
-        setIsVisible(false);
+      // Close expanded drawer on scroll to keep view clean
+      if (isExpanded) {
         setIsExpanded(false);
+      }
+
+      // If near the top, highlight hero
+      if (scrollY < 100) {
+        setActiveSection("hero-section");
+        return;
       }
 
       // If near the very bottom, activate guestbook or rsvp

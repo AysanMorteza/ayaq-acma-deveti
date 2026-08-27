@@ -32,7 +32,7 @@ export default function App() {
       )}
 
       {/* Main Luxury Invitation Container */}
-      <main className="relative z-10 w-full max-w-5xl mx-auto px-3 sm:px-6 pb-20 transition-opacity duration-700">
+      <main className="relative z-10 w-full max-w-5xl mx-auto px-3 sm:px-6 pb-28 sm:pb-32 transition-opacity duration-700">
         {/* 💎 Hero Section + ⏳ Countdown Timer */}
         <HeroSection />
 
@@ -50,7 +50,7 @@ export default function App() {
       <FooterSection />
 
       {/* 🧭 Sticky Luxury Bottom Navigation Bar */}
-      <BottomNavigationMenu />
+      {hasUnveiled && <BottomNavigationMenu />}
     </div>
   );
 }
