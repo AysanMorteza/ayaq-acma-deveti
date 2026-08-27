@@ -1,0 +1,211 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-persian: 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  body {
+    font-family: var(--font-persian);
+    background-color: #FAF6EE;
+    color: #262118;
+    overflow-x: hidden;
+  }
+}
+
+/* 🌟 Luxury Gold Gradient Text Utilities */
+.gold-text-gradient {
+  background: linear-gradient(135deg, #B8860B 0%, #D4AF37 40%, #8A6412 80%, #C59A27 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gold-text-foil {
+  background: linear-gradient(135deg, #966C15 0%, #D4AF37 25%, #FFF2B2 45%, #B8860B 65%, #785208 85%, #C89C2A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.font-lalezar {
+  font-family: 'Lalezar', cursive, sans-serif;
+}
+
+.font-messiri {
+  font-family: 'El Messiri', 'Vazirmatn', sans-serif;
+}
+
+.font-markazi {
+  font-family: 'Markazi Text', 'Vazirmatn', serif;
+}
+
+.font-calligraphy {
+  font-family: 'Amiri', 'Noto Naskh Arabic', 'Vazirmatn', serif;
+}
+
+.font-naskh {
+  font-family: 'Noto Naskh Arabic', 'Amiri', 'Vazirmatn', serif;
+}
+
+.font-gulzar {
+  font-family: 'Gulzar', serif;
+}
+
+.font-english-luxury {
+  font-family: 'Cormorant Garamond', 'Great Vibes', serif;
+}
+
+.gold-foil-card {
+  background: linear-gradient(145deg, #FFFFFF 0%, #FDFBF7 60%, #F8F3E6 100%);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  box-shadow: 0 10px 30px -5px rgba(212, 175, 55, 0.12), 0 4px 12px -2px rgba(0, 0, 0, 0.04);
+}
+
+.gold-foil-card-hover {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.gold-foil-card-hover:hover {
+  border-color: rgba(212, 175, 55, 0.8);
+  box-shadow: 0 15px 35px -5px rgba(212, 175, 55, 0.22), 0 6px 16px -2px rgba(0, 0, 0, 0.06);
+  transform: translateY(-2px);
+}
+
+/* 🌟 Royal Gold Shimmer & Heartbeat Animations */
+@keyframes shimmerGold {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.gold-shimmer-text {
+  background: linear-gradient(
+    90deg,
+    #8A6412 0%,
+    #D4AF37 25%,
+    #FFF4CC 50%,
+    #D4AF37 75%,
+    #8A6412 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmerGold 4s linear infinite;
+}
+
+@keyframes authenticHeartbeat {
+  0% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 2px rgba(244, 63, 94, 0.4));
+  }
+  14% {
+    transform: scale(1.28);
+    filter: drop-shadow(0 0 10px rgba(244, 63, 94, 0.7));
+  }
+  28% {
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 4px rgba(244, 63, 94, 0.5));
+  }
+  42% {
+    transform: scale(1.32);
+    filter: drop-shadow(0 0 12px rgba(244, 63, 94, 0.8));
+  }
+  70% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 2px rgba(244, 63, 94, 0.3));
+  }
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 2px rgba(244, 63, 94, 0.3));
+  }
+}
+
+.animate-authentic-heartbeat {
+  animation: authenticHeartbeat 1.6s ease-in-out infinite;
+  display: inline-block;
+  transform-origin: center;
+}
+
+/* ♨️ Realistic Steam Keyframes */
+@keyframes steamRiseKeyframe {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.6) rotate(0deg);
+  }
+  30% {
+    opacity: 0.85;
+  }
+  60% {
+    opacity: 0.55;
+    transform: translateY(-28px) scale(1.35) rotate(8deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-58px) scale(1.85) rotate(-8deg);
+  }
+}
+
+.steam-puff {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0%, rgba(212, 175, 55, 0.25) 50%, rgba(255, 255, 255, 0) 80%);
+  filter: blur(5px);
+}
+
+.steam-1 {
+  animation: steamRiseKeyframe 2.2s infinite ease-out;
+}
+
+.steam-2 {
+  animation: steamRiseKeyframe 2.6s infinite ease-out 0.6s;
+}
+
+.steam-3 {
+  animation: steamRiseKeyframe 2.4s infinite ease-out 1.2s;
+}
+
+/* 🎵 Audio Visualizer Bars */
+@keyframes musicBarPulse {
+  0%, 100% {
+    height: 3px;
+  }
+  50% {
+    height: 100%;
+  }
+}
+
+.animate-music-bar {
+  animation: musicBarPulse 0.9s infinite ease-in-out alternate;
+}
+
+/* ♿ Accessibility: Reduce Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .steam-puff,
+  .animate-music-bar {
+    animation: none !important;
+  }
+}
+
+/* Hide scrollbars cleanly for horizontal navigation */
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+

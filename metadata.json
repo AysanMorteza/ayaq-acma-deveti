@@ -1,0 +1,6 @@
+{
+  "name": "دعوتنامه پاگشایی آیسان و مرتضی",
+  "description": "دعوتنامه آنلاین و فوق لوکس مراسم پاگشایی آیسان و مرتضی با طراحی مجلل طلاکوب، شمارش معکوس، منوی تشریفاتی و مسیریابی هوشمند",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
