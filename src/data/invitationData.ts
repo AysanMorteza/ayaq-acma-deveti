@@ -1,5 +1,5 @@
 import { MenuItem, TimelineItem, GalleryPhoto } from '../types';
-import childhoodImg from '../assets/images/childhood_real.jpg';
+import childhoodImg from '../assets/images/childhood_real.png';
 import weddingImg from '../assets/images/wedding_real.jpg';
 
 export const INVITATION_DETAILS = {
