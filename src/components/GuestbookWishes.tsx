@@ -35,7 +35,9 @@ import {
   Award,
   Filter,
   Flame,
-  Star
+  Star,
+  Wifi,
+  Globe
 } from "lucide-react";
 import confetti from "canvas-confetti";
 
@@ -108,7 +110,15 @@ export const GuestbookWishes: React.FC = () => {
       })
       .catch((err) => {
         console.warn("Initial wishes getDocs warning:", err);
+        if (isMounted) setLoading(false);
       });
+
+    // Safety timeout: ensure loading state never hangs
+    const safetyTimer = setTimeout(() => {
+      if (isMounted) {
+        setLoading(false);
+      }
+    }, 2500);
 
     // 2. Real-time subscription with automatic fallback
     let unsubscribe: () => void = () => {};
@@ -164,6 +174,7 @@ export const GuestbookWishes: React.FC = () => {
 
     return () => {
       isMounted = false;
+      clearTimeout(safetyTimer);
       unsubscribe();
     };
   }, []);
@@ -450,9 +461,24 @@ export const GuestbookWishes: React.FC = () => {
           <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-amber-200 via-amber-400 to-amber-200 bg-clip-text text-transparent mb-2">
             دفترچه تبریک و شادباش مهمانان
           </h2>
-          <p className="text-stone-300 text-sm sm:text-base max-w-md mx-auto leading-relaxed">
+          <p className="text-stone-300 text-sm sm:text-base max-w-md mx-auto leading-relaxed mb-4">
             پیام‌های پرمهر و دعای خیر شما عزیزان که به یادگار در قلب ما و این صفحه ثبت می‌گردد.
           </p>
+
+          {/* 🌐 Option 2: VPN Connection Notice Banner */}
+          <div className="max-w-xl mx-auto my-4 bg-gradient-to-r from-amber-500/10 via-amber-400/15 to-amber-500/10 border border-amber-400/40 backdrop-blur-md rounded-2xl p-3.5 sm:p-4 text-center shadow-lg relative overflow-hidden">
+            <div className="flex items-center justify-center gap-2 mb-1 text-amber-300 font-bold text-xs sm:text-sm">
+              <span className="text-base">💌</span>
+              <span>همراهان عزیز:</span>
+              <span className="inline-flex items-center gap-1 bg-amber-400/20 text-amber-200 px-2 py-0.5 rounded-full text-[11px] font-semibold border border-amber-400/30">
+                <Globe className="w-3 h-3 text-amber-300 animate-pulse" />
+                اتصال ابری
+              </span>
+            </div>
+            <p className="text-amber-100/90 text-xs sm:text-[13px] leading-relaxed">
+              پیام‌ها و آرزوهای قشنگ شما به صورت زنده ثبت می‌شوند؛ برای باز شدن لیست دل‌نوشته‌ها و ثبت تبریک، مطمئن شوید که <strong className="text-amber-300 font-bold bg-amber-500/20 px-1.5 py-0.5 rounded border border-amber-400/30">فیلترشکن شما متصل است</strong>. 💖🌟
+            </p>
+          </div>
 
           <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
             <button

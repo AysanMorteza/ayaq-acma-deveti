@@ -8,11 +8,11 @@ import {
 } from "firebase/firestore";
 import firebaseConfig from "../firebase-applet-config.json";
 
-// Configure Firestore logging level to prevent noisy transient warnings
+// Set log level to silent so transient network negotiation notes do not throw console errors
 try {
-  setLogLevel("error");
+  setLogLevel("silent");
 } catch {
-  // Ignore if already set
+  // Ignore if already configured
 }
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
